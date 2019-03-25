@@ -12,3 +12,5 @@ Simple bash script that uses [wl-clipboard](https://github.com/bugaevc/wl-clipbo
 To use with [sway](https://github.com/swaywm/sway) add the following to your configuration:
 
     exec wl-clipboard-manager -t
+
+There's also a [fzf](https://github.com/junegunn/fzf) wrapper for selecting the contents with a [TUI](https://github.com/janza/wl-clipboard-history/blob/master/contrib/fzf-wrapper).

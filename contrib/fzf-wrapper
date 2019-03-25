@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -euo pipefail
 
-wl-clipboard-manager -p "$(wl-clipboard-manager -l 20 | fzf --with-nth 2.. -d , | cut -d ',' -f1)"
+wl-clipboard-history -p "$(wl-clipboard-history -l 20 | fzf --with-nth 2.. -d , | cut -d ',' -f1)"
