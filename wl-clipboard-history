@@ -19,9 +19,11 @@ fi
 
 
 listen () {
+    failed_count=0
     while true
     do
-        printf "%s" "$contents" | wl-copy -f || true
+        if [ $failed_count -gt 5 ]; then exit 1; fi
+        printf "%s" "$contents" | wl-copy -f && failed_count=0 || failed_count=$(("$failed_count"+1))
         old_contents="$contents"
         contents=$(wl-paste -n -t "text/plain;charset=utf-8" || true)
         if [ -n "$contents" ] && [ "$contents" != "$old_contents" ]; then
