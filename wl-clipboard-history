@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+set -euo pipefail
+
+contents=""
+clipboard_file="$HOME/.clipboard.sqlite"
+
+query () {
+    echo "$1" | sqlite3 -separator "," "$clipboard_file"
+}
+
+if [ ! -f "$clipboard_file" ]; then
+    query "
+    CREATE TABLE c (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, contents text);
+    CREATE TRIGGER rotate_rows AFTER INSERT ON c
+   BEGIN
+     DELETE FROM c WHERE id <= (SELECT id FROM c ORDER BY id DESC LIMIT 1000, 1);
+   END;"
+fi
+
+
+listen () {
+    while true
+    do
+        printf "%s" "$contents" | wl-copy -f || true
+        old_contents="$contents"
+        contents=$(wl-paste -n -t "text/plain;charset=utf-8" || true)
+        if [ -n "$contents" ] && [ "$contents" != "$old_contents" ]; then
+           query "INSERT INTO c (contents) VALUES ('$(echo "$contents" | sed -e "s/'/''/g")');"
+        fi
+    done
+}
+
+helpusage () {
+    echo "Usage: $0 OPTION [ARG]"
+    echo ""
+    echo "   -t           Track clipboard changes"
+    echo "   -l [NUMBER]  Print last NUMBER of clipboard entries (defaults to 10 entries)"
+    echo "   -p [INDEX]   Print clipboard entry at INDEX (defaults to the last entry)"
+}
+
+if [ $# = 0 ]; then
+    helpusage
+    exit 1
+fi
+
+if [ "$1" = "-t" ]; then
+    listen
+elif [ "$1" = "-l" ]; then
+    query "SELECT MAX(id), REPLACE(contents, '
+', '') FROM c GROUP BY contents ORDER BY id DESC LIMIT ${2:-10}"
+elif [ "$1" = "-p" ]; then
+   query "SELECT contents FROM c WHERE id = ${2:-"(SELECT id FROM c ORDER BY id DESC)"} ORDER BY id DESC LIMIT 1"
+else
+    helpusage
+    exit 1
+fi
+
