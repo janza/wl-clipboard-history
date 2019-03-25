@@ -14,3 +14,7 @@ To use with [sway](https://github.com/swaywm/sway) add the following to your con
     exec wl-clipboard-manager -t
 
 There's also a [fzf](https://github.com/junegunn/fzf) wrapper for selecting the contents with a [TUI](https://github.com/janza/wl-clipboard-history/blob/master/contrib/fzf-wrapper).
+
+### TODO
+
+- [ ] Add support to delete entries from the history (eg. secrets)
