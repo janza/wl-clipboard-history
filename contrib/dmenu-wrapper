@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+set -euo pipefail
+
+wl-clipboard-history -p "$(wl-clipboard-history -l 20 | dmenu | cut -d ',' -f1)" | wl-copy
