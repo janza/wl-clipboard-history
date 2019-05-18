@@ -25,9 +25,12 @@ listen () {
         if [ $failed_count -gt 5 ]; then exit 1; fi
         printf "%s" "$contents" | wl-copy -f && failed_count=0 || failed_count=$(("$failed_count"+1))
         old_contents="$contents"
-        contents=$(wl-paste -n -t "text/plain;charset=utf-8" || true)
-        if [ -n "$contents" ] && [ "$contents" != "$old_contents" ]; then
-           query "INSERT INTO c (contents) VALUES ('$(echo "$contents" | sed -e "s/'/''/g")');"
+
+        if wl-paste -l | grep -qiE 'string|text'; then
+           contents=$(wl-paste -n || true)
+           if [ -n "$contents" ] && [ "$contents" != "$old_contents" ]; then
+              query "INSERT INTO c (contents) VALUES ('$(echo "$contents" | sed -e "s/'/''/g")');"
+           fi
         fi
     done
 }
