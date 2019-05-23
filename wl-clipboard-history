@@ -27,7 +27,8 @@ listen () {
         old_contents="$contents"
 
         if wl-paste -l | grep -qiE 'string|text'; then
-           contents=$(wl-paste -n || true)
+           contents=$(wl-paste -n; printf a);
+           contents="${contents%a}"
            if [ -n "$contents" ] && [ "$contents" != "$old_contents" ]; then
               query "INSERT INTO c (contents) VALUES ('$(echo "$contents" | sed -e "s/'/''/g")');"
            fi
