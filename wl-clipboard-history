@@ -46,7 +46,7 @@ if [ "$1" = "-t" ]; then
    listen
 elif [ "$1" = "-l" ]; then
    query "SELECT MAX(id), REPLACE(contents, '
-   ', '') FROM c GROUP BY contents ORDER BY id DESC LIMIT ${2:-10}"
+', '') FROM c GROUP BY contents ORDER BY id DESC LIMIT ${2:-10}"
 elif [ "$1" = "-p" ]; then
    query "SELECT contents FROM c WHERE id = ${2:-"(SELECT id FROM c ORDER BY id DESC)"}"
 else
