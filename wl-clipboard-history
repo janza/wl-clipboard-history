@@ -18,7 +18,7 @@ fi
 
 
 listen () {
-    wl-paste -w wl-clipboard-history -s
+    wl-paste -w wl-clipboard-history
 }
 
 helpusage () {
