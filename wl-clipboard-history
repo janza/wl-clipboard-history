@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 set -euo pipefail
 
-contents=""
 clipboard_file="$HOME/.clipboard.sqlite"
 
 query () {
@@ -19,45 +18,39 @@ fi
 
 
 listen () {
-    failed_count=0
-    while true
-    do
-        if [ $failed_count -gt 5 ]; then exit 1; fi
-        printf "%s" "$contents" | wl-copy -f && failed_count=0 || failed_count=$(("$failed_count"+1))
-        old_contents="$contents"
-
-        if wl-paste -l | grep -qiE 'string|text'; then
-           contents=$(wl-paste -n; printf a);
-           contents="${contents%a}"
-           if [ -n "$contents" ] && [ "$contents" != "$old_contents" ]; then
-              query "INSERT INTO c (contents) VALUES ('$(echo "$contents" | sed -e "s/'/''/g")');"
-           fi
-        fi
-    done
+    wl-paste -w wl-clipboard-history -s
 }
 
 helpusage () {
     echo "Usage: $0 OPTION [ARG]"
     echo ""
+    echo "Without any arguments the command will insert contents of stdin in the database"
     echo "   -t           Track clipboard changes"
     echo "   -l [NUMBER]  Print last NUMBER of clipboard entries (defaults to 10 entries)"
     echo "   -p [INDEX]   Print clipboard entry at INDEX (defaults to the last entry)"
 }
 
 if [ $# = 0 ]; then
-    helpusage
-    exit 1
+   contents="$(< /dev/stdin sed "s/'/''/g")"
+   echo "$contents"
+   if [ "$contents" = "" ]; then
+      helpusage
+      exit 1
+   else
+      query "INSERT INTO c (contents) VALUES ('${contents}');"
+      exit 0
+   fi
 fi
+
 
 if [ "$1" = "-t" ]; then
-    listen
+   listen
 elif [ "$1" = "-l" ]; then
-    query "SELECT MAX(id), REPLACE(contents, '
-', '') FROM c GROUP BY contents ORDER BY id DESC LIMIT ${2:-10}"
+   query "SELECT MAX(id), REPLACE(contents, '
+   ', '') FROM c GROUP BY contents ORDER BY id DESC LIMIT ${2:-10}"
 elif [ "$1" = "-p" ]; then
-   query "SELECT contents FROM c WHERE id = ${2:-"(SELECT id FROM c ORDER BY id DESC)"} ORDER BY id DESC LIMIT 1"
+   query "SELECT contents FROM c WHERE id = ${2:-"(SELECT id FROM c ORDER BY id DESC)"}"
 else
-    helpusage
-    exit 1
+   helpusage
+   exit 1
 fi
-
