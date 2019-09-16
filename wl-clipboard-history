@@ -32,7 +32,6 @@ helpusage () {
 
 if [ $# = 0 ]; then
    contents="$(< /dev/stdin sed "s/'/''/g")"
-   echo "$contents"
    if [ "$contents" = "" ]; then
       helpusage
       exit 1
