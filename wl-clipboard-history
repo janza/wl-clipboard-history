@@ -1,7 +1,8 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -euo pipefail
 
 clipboard_file="$HOME/.clipboard.sqlite"
+clipboard_ignore_file="$HOME/.config/wl-clipboard-history/ignore"
 
 query () {
     echo "$1" | sqlite3 -separator "," "$clipboard_file"
@@ -31,6 +32,12 @@ helpusage () {
 }
 
 if [ $# = 0 ]; then
+   case $XDG_CURRENT_DESKTOP in
+      Hyprland)
+	 [ ! $(hyprctl -j activewindow | jq -r '.class' | xargs -I _ grep --count '_' $clipboard_ignore_file) = 0 ] && exit 0
+	 ;;
+	 # TODO: Add cases for other wayland compositors
+   esac
    contents="$(< /dev/stdin sed "s/'/''/g")"
    if [ "$contents" = "" ]; then
       helpusage

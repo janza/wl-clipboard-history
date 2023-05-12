@@ -15,6 +15,13 @@ To use with [sway](https://github.com/swaywm/sway) add the following to your con
 
 There's also a [fzf](https://github.com/junegunn/fzf) wrapper for selecting the contents with a [TUI](https://github.com/janza/wl-clipboard-history/blob/master/contrib/fzf-wrapper).
 
+It's also possible to ignore tracking the clipboard for a specific window class.
+
+For example, to ignore tracking the clipboard for KeePassXC
+add the following line to `~/.config/wl-clipboard-history/ignore`:
+
+    org.keepassxc.KeePassXC
+
 ### TODO
 
 - [ ] Add support to delete entries from the history (eg. secrets)
