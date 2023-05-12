@@ -18,7 +18,7 @@ There's also a [fzf](https://github.com/junegunn/fzf) wrapper for selecting the 
 It's also possible to ignore tracking the clipboard for a specific window class.
 
 For example, to ignore tracking the clipboard for KeePassXC
-add the following line to `~/.config/wayland-clipboard-ignore`:
+add the following line to `~/.config/wl-clipboard-history/ignore`:
 
     org.keepassxc.KeePassXC
 

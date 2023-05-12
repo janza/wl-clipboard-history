@@ -2,7 +2,7 @@
 set -euo pipefail
 
 clipboard_file="$HOME/.clipboard.sqlite"
-clipboard_ignore_file="$HOME/.config/wayland-clipboard-ignore"
+clipboard_ignore_file="$HOME/.config/wl-clipboard-history/ignore"
 
 query () {
     echo "$1" | sqlite3 -separator "," "$clipboard_file"
