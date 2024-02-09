@@ -22,7 +22,7 @@ listen () {
 }
 
 helpusage () {
-    echo "Usage: $0 OPTION [ARG]"
+    echo "Usage: $(basename $0) OPTION [ARG]"
     echo ""
     echo "Without any arguments the command will insert contents of stdin in the database"
     echo "   -t           Track clipboard changes"
