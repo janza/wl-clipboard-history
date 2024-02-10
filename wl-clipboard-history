@@ -18,11 +18,12 @@ fi
 
 
 listen () {
+    echo "$(basename $0) watching for clipboard changes"
     wl-paste -w wl-clipboard-history
 }
 
 helpusage () {
-    echo "Usage: $0 OPTION [ARG]"
+    echo "Usage: $(basename $0) OPTION [ARG]"
     echo ""
     echo "Without any arguments the command will insert contents of stdin in the database"
     echo "   -t           Track clipboard changes"
@@ -30,15 +31,27 @@ helpusage () {
     echo "   -p [INDEX]   Print clipboard entry at INDEX (defaults to the last entry)"
 }
 
+mime_type () {
+    file --mime-type - | sed -E 's|.*: (.*)|\1|'
+}
+
 if [ $# = 0 ]; then
    contents="$(< /dev/stdin sed "s/'/''/g")"
    if [ "$contents" = "" ]; then
       helpusage
       exit 1
-   else
-      query "INSERT INTO c (contents) VALUES ('${contents}');"
-      exit 0
    fi
+
+   mime_type="$(echo "${contents}" | mime_type)"
+   case ${mime_type} in
+   text/*)
+       query "INSERT INTO c (contents) VALUES ('${contents}');"
+       ;;
+   *)
+       echo "Got mime type ${mime_type}, not inserting."
+       ;;
+   esac
+   exit 0
 fi
 
 
